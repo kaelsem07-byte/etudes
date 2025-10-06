@@ -8,7 +8,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* Slate-100 */
+            background-color: #f8fafc; /* Slate-50 - Très clair pour un bon contraste */
+        }
+        /* Conteneur principal: Plus de marge sur mobile */
+        .main-container {
+            @apply max-w-7xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden;
         }
         /* Style des tableaux intégrés au contenu (prose) */
         .prose table, .journal-table {
@@ -16,17 +20,24 @@
             margin-top: 1em;
             margin-bottom: 1em;
             border-collapse: collapse;
-            @apply shadow-sm rounded-lg overflow-hidden;
+            @apply shadow-lg rounded-xl overflow-hidden bg-white;
+        }
+        /* Rendre les tableaux défilables horizontalement sur mobile */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .prose th, .prose td, .journal-table th, .journal-table td {
             border: 1px solid #e2e8f0;
-            padding: 10px;
+            padding: 12px;
             text-align: left;
+            min-width: 100px; /* Assure que le contenu est lisible même si le tableau est étroit */
         }
         .prose th, .journal-table th {
-            background-color: #e2e8f0; /* Slate-200 */
+            background-color: #3b82f6; /* Blue-500 pour une meilleure visibilité */
+            color: white;
             text-align: center;
-            @apply font-bold text-slate-700;
+            @apply font-bold;
         }
         /* Amélioration de la lisibilité des montants */
         .journal-row input[type="number"], .journal-row input[placeholder*="0.00"] {
@@ -34,13 +45,13 @@
             font-family: monospace;
             @apply font-semibold;
         }
-        /* Style des onglets principaux (Pill Tabs) */
+        /* Style des onglets principaux (Pill Tabs) - Plus visibles */
         .tab-button {
             transition: all 0.3s ease;
-            @apply px-5 py-2.5 font-bold text-sm rounded-full text-slate-700 hover:bg-white hover:shadow-md border border-transparent;
+            @apply px-5 py-3 font-extrabold text-sm rounded-full text-slate-800 bg-slate-300 hover:bg-white hover:shadow-xl border border-transparent;
         }
         .tab-button.active {
-            @apply bg-indigo-600 text-white shadow-lg shadow-indigo-200 border-indigo-700;
+            @apply bg-indigo-600 text-white shadow-xl shadow-indigo-300 border-indigo-700;
         }
         /* Overlay de chargement */
         #loading-overlay {
@@ -49,7 +60,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(248, 250, 252, 0.95); /* Slate-100 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -71,22 +82,30 @@
         textarea {
             resize: vertical;
             min-height: 80px;
+        }
+        /* Ajustement des inputs pour les colonnes comptables sur mobile */
+        @media (max-width: 768px) {
+            .journal-row input, .journal-row input[disabled] {
+                min-width: 80px; /* Plus petit sur mobile */
+                padding: 6px;
+                font-size: 0.875rem; /* text-sm */
+            }
         }</style>
 <!-- Overlay de Chargement Global -->
 <div id="loading-overlay" class="opacity-0 pointer-events-none">
   <div class="spinner"></div>
   <span id="loading-message" class="ml-4 text-indigo-700 font-semibold">Analyse en cours...</span>
 </div>
-<div class="max-w-7xl mx-auto bg-white shadow-2xl rounded-2xl overflow-hidden"><!-- Header avec Dégradé -->
-  <header class="p-8 text-center bg-gradient-to-r from-indigo-700 to-purple-800 rounded-t-2xl text-white shadow-lg">
-    <h1 class="text-4xl font-extrabold flex items-center justify-center gap-4">
-      <i data-lucide="graduation-cap" class="w-10 h-10"></i> HUB DE RÉVISION BTS CG
+<div class="main-container"><!-- Header avec Dégradé amélioré -->
+  <header class="p-8 text-center bg-gradient-to-r from-indigo-700 to-purple-800 rounded-t-2xl text-white shadow-xl">
+    <h1 class="text-3xl sm:text-4xl font-extrabold flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4">
+      <i data-lucide="graduation-cap" class="w-8 h-8 sm:w-10 sm:h-10"></i> HUB DE RÉVISION BTS CG
     </h1>
-    <p class="text-indigo-200 mt-2 text-lg">Processus 1 &amp; 2 : TVA, Immobilisation, Rapprochement &amp; Tiers.</p>
+    <p class="text-indigo-200 mt-2 text-md sm:text-lg">Processus 1 &amp; 2 : TVA, Immobilisation, Rapprochement &amp; Tiers.</p>
   </header>
     <!-- Navigation par Onglets (Pill Tabs) -->
-  <div class="flex justify-center p-3 bg-slate-200 shadow-inner -mt-1 z-10 relative">
-    <div class="flex space-x-2">
+  <div class="flex flex-wrap justify-center p-3 bg-slate-100 shadow-inner z-10 relative">
+    <div class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
       <button class="tab-button active" data-module="module-tva" onclick="showModule('module-tva')">
         <i data-lucide="tag" class="w-4 h-4 inline-block mr-1"></i> TVA &amp; Immobilisation
       </button>
@@ -99,180 +118,184 @@
     </div>
   </div>
     <!-- Contenu des Modules -->
-  <main class="p-6 md:p-10"><!-- MODULE 1: TVA & Opérations Spécifiques (Activité 1.4 & 1.5) -->
+  <main class="p-4 md:p-10"><!-- MODULE 1: TVA & Opérations Spécifiques (Activité 1.4 & 1.5) -->
     <div id="module-tva" class="module-content">
-      <h2 class="text-3xl font-bold text-indigo-800 mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
-        <i data-lucide="layers" class="w-7 h-7"></i> Processus 1 : TVA &amp; Immobilisation
+      <h2 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-6 md:mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
+        <i data-lucide="layers" class="w-6 h-6"></i> Processus 1 : TVA &amp; Immobilisation
       </h2>
             <!-- Activité 1,4 - Correction d'Examen IA - Étude de Cas TVA -->
-      <section class="mb-12 p-8 bg-sky-50 rounded-2xl shadow-xl border border-sky-200">
-        <h3 class="text-2xl font-bold text-sky-700 mb-6 border-b pb-2 flex items-center gap-3">
-          <i data-lucide="file-text" class="w-6 h-6"></i> A. Étude de Cas : La TVA sur les Opérations Particulières
+      <section class="mb-12 p-4 md:p-8 bg-sky-50 rounded-2xl shadow-xl border border-sky-300">
+        <h3 class="text-xl md:text-2xl font-bold text-sky-700 mb-6 border-b pb-2 flex items-center gap-3">
+          <i data-lucide="file-text" class="w-5 h-5"></i> A. Étude de Cas : La TVA sur les Opérations Particulières
         </h3>
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10"><!-- Colonne de l'étude de cas (Annexe) -->
-          <div id="case-study-tva" class="prose max-w-none bg-white p-6 rounded-xl shadow-lg border border-slate-200 h-full">
-            <h4 class="text-xl font-bold text-slate-800 border-b pb-2 mb-3">Mise en Situation : Étude de cas "Bio-Essence SARL"</h4>
-            <p>Vous êtes assistant(e) comptable au sein de la société 
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10"><!-- Colonne de l'étude de cas (Annexe) -->
+          <div id="case-study-tva" class="prose max-w-none bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200 h-full">
+            <h4 class="text-lg md:text-xl font-bold text-slate-800 border-b pb-2 mb-3">Mise en Situation : Étude de cas "Bio-Essence SARL"</h4>
+            <p>Vous êtes assistant(e) comptable au sein de la société
               <strong>Bio-Essence SARL</strong>, une entreprise française spécialisée dans la fabrication et la vente de produits cosmétiques biologiques. Vous êtes chargé(e) de traiter les opérations courantes du mois de septembre 2025.
             </p>
             <p>L'entreprise est soumise au régime réel normal de la TVA et dépose des déclarations mensuelles (CA3). Elle n'a pas opté pour la TVA sur les débits pour ses prestations de services.</p>
             <p class="font-bold text-lg mt-4">Annexe 1 : Facture de vente V2025-09-15</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>BIO-ESSENCE SARL</th>
-                  <th>FACTURE N° V2025-09-15</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>15, rue de la Nature
-                    <br>06500 MENTON
-                    <br>N° TVA : FR 12 345 678 901
-                  </td>
-                  <td>
-                    <strong>Client :</strong>
-                    <br>PHARMACIE DU SOLEIL
-                    <br>2, avenue Jean Médecin
-                    <br>06000 NICE
-                    <br>N° TVA : FR 98 765 432 109
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table>
-              <thead>
-                <tr>
-                  <th>Désignation</th>
-                  <th>Quantité</th>
-                  <th>Prix Unitaire HT</th>
-                  <th>Montant HT</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Crème hydratante bio "Douceur Alpine"</td>
-                  <td>100</td>
-                  <td>15,00 €</td>
-                  <td>1 500,00 €</td>
-                </tr>
-                <tr>
-                  <td>Huile de massage bio "Sérénité"</td>
-                  <td>50</td>
-                  <td>20,00 €</td>
-                  <td>1 000,00 €</td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    <strong>Sous-total Marchandises</strong>
-                  </td>
-                  <td>
-                    <strong>2 500,00 €</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Port facturé (7085)</td>
-                  <td>1</td>
-                  <td>80,00 €</td>
-                  <td>80,00 €</td>
-                </tr>
-                <tr>
-                  <td>Consigne pour 2 palettes (4196)</td>
-                  <td>2</td>
-                  <td>30,00 €</td>
-                  <td>60,00 €</td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    <strong>TOTAL HT (Base TVA: 2580€)</strong>
-                  </td>
-                  <td>
-                    <strong>2 580,00 €</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    <strong>TVA à 20% (sur 2500 + 80)</strong>
-                  </td>
-                  <td>
-                    <strong>516,00 €</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="3">
-                    <strong>NET À PAYER TTC</strong>
-                  </td>
-                  <td>
-                    <strong>3 156,00 €</strong>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>BIO-ESSENCE SARL</th>
+                    <th>FACTURE N° V2025-09-15</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>15, rue de la Nature
+                      <br>06500 MENTON
+                      <br>N° TVA : FR 12 345 678 901
+                    </td>
+                    <td>
+                      <strong>Client :</strong>
+                      <br>PHARMACIE DU SOLEIL
+                      <br>2, avenue Jean Médecin
+                      <br>06000 NICE
+                      <br>N° TVA : FR 98 765 432 109
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Désignation</th>
+                    <th>Quantité</th>
+                    <th>Prix Unitaire HT</th>
+                    <th>Montant HT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Crème hydratante bio "Douceur Alpine"</td>
+                    <td>100</td>
+                    <td>15,00 €</td>
+                    <td>1 500,00 €</td>
+                  </tr>
+                  <tr>
+                    <td>Huile de massage bio "Sérénité"</td>
+                    <td>50</td>
+                    <td>20,00 €</td>
+                    <td>1 000,00 €</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <strong>Sous-total Marchandises</strong>
+                    </td>
+                    <td>
+                      <strong>2 500,00 €</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Port facturé (7085)</td>
+                    <td>1</td>
+                    <td>80,00 €</td>
+                    <td>80,00 €</td>
+                  </tr>
+                  <tr>
+                    <td>Consigne pour 2 palettes (4196)</td>
+                    <td>2</td>
+                    <td>30,00 €</td>
+                    <td>60,00 €</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <strong>TOTAL HT (Base TVA: 2580€)</strong>
+                    </td>
+                    <td>
+                      <strong>2 580,00 €</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <strong>TVA à 20% (sur 2500 + 80)</strong>
+                    </td>
+                    <td>
+                      <strong>516,00 €</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="3">
+                      <strong>NET À PAYER TTC</strong>
+                    </td>
+                    <td>
+                      <strong>3 156,00 €</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <p>
               <em>Conditions de règlement : 30 jours fin de mois.</em>
             </p>
             <p class="font-bold text-lg mt-4">Annexe 2 : Facture d'achat A2025-09-20 (LIVRAISON INTRACOMMUNAUTAIRE)</p>
-            <table>
-              <thead>
-                <tr>
-                  <th>NATUR-KOSMETIK GmbH</th>
-                  <th>INVOICE N° 88-4321</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Bergmannstraße 29
-                    <br>10961 BERLIN - ALLEMAGNE
-                    <br>N° TVA : DE 123456789
-                  </td>
-                  <td>
-                    <strong>Client :</strong>
-                    <br>BIO-ESSENCE SARL
-                    <br>15, rue de la Nature
-                    <br>06500 MENTON
-                    <br>N° TVA : FR 12 345 678 901
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <table>
-              <thead>
-                <tr>
-                  <th>Désignation</th>
-                  <th>Montant HT</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Huile essentielle de lavande bio</td>
-                  <td>1 800,00 €</td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>TOTAL HT</strong>
-                  </td>
-                  <td>
-                    <strong>1 800,00 €</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>TVA</strong>
-                  </td>
-                  <td>
-                    <strong>0,00 € (Exonérée)</strong>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <strong>NET À PAYER</strong>
-                  </td>
-                  <td>
-                    <strong>1 800,00 €</strong>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>NATUR-KOSMETIK GmbH</th>
+                    <th>INVOICE N° 88-4321</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Bergmannstraße 29
+                      <br>10961 BERLIN - ALLEMAGNE
+                      <br>N° TVA : DE 123456789
+                    </td>
+                    <td>
+                      <strong>Client :</strong>
+                      <br>BIO-ESSENCE SARL
+                      <br>15, rue de la Nature
+                      <br>06500 MENTON
+                      <br>N° TVA : FR 12 345 678 901
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Désignation</th>
+                    <th>Montant HT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Huile essentielle de lavande bio</td>
+                    <td>1 800,00 €</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>TOTAL HT</strong>
+                    </td>
+                    <td>
+                      <strong>1 800,00 €</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>TVA</strong>
+                    </td>
+                    <td>
+                      <strong>0,00 € (Exonérée)</strong>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <strong>NET À PAYER</strong>
+                    </td>
+                    <td>
+                      <strong>1 800,00 €</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
             <p class="text-sm italic">Mention : "Autoliquidation par le preneur"</p>
             <p class="font-bold text-lg mt-4">Annexe 3 : Extrait du Plan Comptable</p>
             <ul>
@@ -286,7 +309,7 @@
           </div>
                     <!-- Colonne des questions et réponses -->
           <div class="space-y-6">
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
               <h3 class="text-xl font-semibold text-sky-700 mb-3 border-b pb-2">Partie 1 : Analyse Théorique</h3>
               <div class="space-y-4">
                 <div>
@@ -307,7 +330,7 @@
                 </div>
               </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+            <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
               <h3 class="text-xl font-semibold text-sky-700 mb-3 border-b pb-2">Partie 2 : Journalisation</h3>
               <div class="space-y-4">
                 <div>
@@ -325,7 +348,7 @@
               </div>
             </div>
             <div class="flex justify-end">
-              <button id="submit-btn-tva" class="inline-flex items-center px-8 py-3 border border-transparent text-lg font-bold rounded-xl shadow-lg text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-sky-300 transition-colors">
+              <button id="submit-btn-tva" class="inline-flex items-center px-6 py-3 md:px-8 md:py-4 border border-transparent text-lg font-bold rounded-xl shadow-lg text-white bg-sky-600 hover:bg-sky-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-sky-300 transition-colors w-full sm:w-auto">
                 <i data-lucide="check-circle" class="w-5 h-5 mr-3"></i> Vérifier mes réponses TVA
               </button>
             </div>
@@ -335,31 +358,31 @@
         <div id="results-tva" class="mt-12"></div>
       </section>
             <!-- Activité 1,5 - Acquisition Immobilisation -->
-      <section class="p-8 bg-indigo-50 rounded-2xl shadow-xl border border-indigo-200">
-        <h3 class="text-2xl font-bold text-indigo-700 mb-6 border-b pb-2 flex items-center gap-3">
-          <i data-lucide="building-2" class="w-6 h-6"></i> B. Exercice Pratique : Acquisition d'Immobilisation
+      <section class="p-4 md:p-8 bg-indigo-50 rounded-2xl shadow-xl border border-indigo-300">
+        <h3 class="text-xl md:text-2xl font-bold text-indigo-700 mb-6 border-b pb-2 flex items-center gap-3">
+          <i data-lucide="building-2" class="w-5 h-5"></i> B. Exercice Pratique : Acquisition d'Immobilisation
         </h3>
                 <!-- Contenu de Activité 1,5 -->
-        <div class="bg-white p-6 rounded-xl shadow-inner mb-8 border border-slate-200">
-          <h4 class="text-xl font-semibold text-indigo-700 mb-4 border-b pb-1">Données du Cas - SARL ROSALCHIMIE</h4>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+        <div class="bg-white p-4 md:p-6 rounded-xl shadow-inner mb-8 border border-slate-200">
+          <h4 class="text-lg md:text-xl font-semibold text-indigo-700 mb-4 border-b pb-1">Données du Cas - SARL ROSALCHIMIE</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-sm text-gray-700">
             <p>
               <span class="font-bold text-gray-900">Actif :</span> Ligne de production "PurePress" (Matériel Industriel - **215**).
             </p>
             <p>
-              <span class="font-bold text-gray-900">Coût Capitalisé HT :</span> 
+              <span class="font-bold text-gray-900">Coût Capitalisé HT :</span>
               <span class="text-green-600 font-extrabold">75 750,00 €</span> (Base de l'immobilisation).
             </p>
             <p>
-              <span class="font-bold text-gray-900">Charges Immédiates HT :</span> 
+              <span class="font-bold text-gray-900">Charges Immédiates HT :</span>
               <span class="text-red-600 font-extrabold">500,00 €</span> (Coûts de Formation - **618**).
             </p>
             <p>
-              <span class="font-bold text-gray-900">TVA Déductible (20%) :</span> 
+              <span class="font-bold text-gray-900">TVA Déductible (20%) :</span>
               <span class="text-blue-600 font-extrabold">15 150,00 €</span> (Sur 75 750€ - **44562**).
             </p>
             <p>
-              <span class="font-bold text-gray-900">Montant Total TTC de la dette :</span> 
+              <span class="font-bold text-gray-900">Montant Total TTC de la dette :</span>
               <span class="text-purple-600 font-extrabold">91 400,00 €</span> (**404**).
             </p>
             <p>
@@ -369,44 +392,44 @@
           <p class="mt-4 text-base font-semibold text-gray-800 border-t pt-2 italic">Objectif : Remplir les deux journaux ci-dessous. Le solde total de la colonne Débit doit être égal au solde de la colonne Crédit.</p>
         </div>
         <div id="journal-forms" class="space-y-8"><!-- Journal IM - Acquisition -->
-          <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+          <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Journal IM (Achats d'Immobilisations) - Écriture d'Acquisition</h4>
-            <div id="journal-im-input">
-              <div class="grid grid-cols-4 gap-2 font-bold border-b-2 border-gray-300 pb-2 mb-3 text-sm text-gray-600">
+            <div id="journal-im-input" class="table-responsive">
+              <div class="grid grid-cols-4 gap-2 font-bold border-b-2 border-gray-300 pb-2 mb-3 text-xs sm:text-sm text-gray-600 min-w-[300px]">
                 <span class="text-left">Compte (N°)</span>
                 <span class="text-left">Intitulé</span>
                 <span class="text-right">Débit (€)</span>
                 <span class="text-right">Crédit (€)</span>
               </div>
                             <!-- Ligne 1: 215 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="215" data-journal="im" data-field="compte" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="Matériel Industriel" data-journal="im" data-field="intitule" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="1" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="1" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="215" data-journal="im" data-field="compte" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="Matériel Industriel" data-journal="im" data-field="intitule" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="1" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="1" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
               </div>
                             <!-- Ligne 2: 44562 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="44562" data-journal="im" data-field="compte" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="TVA Déductible Immo" data-journal="im" data-field="intitule" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="2" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="2" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="44562" data-journal="im" data-field="compte" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="TVA Déductible Immo" data-journal="im" data-field="intitule" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="2" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="2" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
               </div>
                             <!-- Ligne 3: 618 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="618" data-journal="im" data-field="compte" data-row="3" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="Frais de Formation" data-journal="im" data-field="intitule" data-row="3" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="3" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="3" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="618" data-journal="im" data-field="compte" data-row="3" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="Frais de Formation" data-journal="im" data-field="intitule" data-row="3" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="3" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="3" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
               </div>
                             <!-- Ligne 4: 404 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="404" data-journal="im" data-field="compte" data-row="4" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="Fournisseur d'Immo" data-journal="im" data-field="intitule" data-row="4" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="4" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
-                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="4" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="404" data-journal="im" data-field="compte" data-row="4" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="Fournisseur d'Immo" data-journal="im" data-field="intitule" data-row="4" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="debit" data-row="4" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
+                <input type="number" placeholder="0.00" data-journal="im" data-field="credit" data-row="4" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
               </div>
-              <div class="grid grid-cols-4 gap-2 pt-4 font-bold text-lg text-gray-800 border-t-2 border-slate-300 mt-4">
+              <div class="grid grid-cols-4 gap-2 pt-4 font-bold text-lg text-gray-800 border-t-2 border-slate-300 mt-4 min-w-[300px]">
                 <span class="col-span-2 text-right">TOTAL :</span>
                 <span id="im-total-debit" class="text-right text-indigo-600">0,00 €</span>
                 <span id="im-total-credit" class="text-right text-indigo-600">0,00 €</span>
@@ -414,30 +437,30 @@
             </div>
           </div>
                     <!-- Journal BQ - Paiement -->
-          <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
+          <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Journal BQ (Banque) - Écriture de Règlement</h4>
-            <div id="journal-bq-input">
-              <div class="grid grid-cols-4 gap-2 font-bold border-b-2 border-gray-300 pb-2 mb-3 text-sm text-gray-600">
+            <div id="journal-bq-input" class="table-responsive">
+              <div class="grid grid-cols-4 gap-2 font-bold border-b-2 border-gray-300 pb-2 mb-3 text-xs sm:text-sm text-gray-600 min-w-[300px]">
                 <span class="text-left">Compte (N°)</span>
                 <span class="text-left">Intitulé</span>
                 <span class="text-right">Débit (€)</span>
                 <span class="text-right">Crédit (€)</span>
               </div>
                             <!-- Ligne 1: 404 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="404" data-journal="bq" data-field="compte" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="Fournisseur d'Immo" data-journal="bq" data-field="intitule" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="bq" data-field="debit" data-row="1" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
-                <input type="number" placeholder="0.00" data-journal="bq" data-field="credit" data-row="1" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="404" data-journal="bq" data-field="compte" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="Fournisseur d'Immo" data-journal="bq" data-field="intitule" data-row="1" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="bq" data-field="debit" data-row="1" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
+                <input type="number" placeholder="0.00" data-journal="bq" data-field="credit" data-row="1" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
               </div>
                             <!-- Ligne 2: 512 -->
-              <div class="grid grid-cols-4 gap-2 journal-row mb-2">
-                <input type="text" placeholder="512" data-journal="bq" data-field="compte" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="text" placeholder="Banque Palatine" data-journal="bq" data-field="intitule" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left">
-                <input type="number" placeholder="0.00" data-journal="bq" data-field="debit" data-row="2" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500" disabled="">
-                <input type="number" placeholder="0.00" data-journal="bq" data-field="credit" data-row="2" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500">
+              <div class="grid grid-cols-4 gap-2 journal-row mb-2 min-w-[300px]">
+                <input type="text" placeholder="512" data-journal="bq" data-field="compte" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="text" placeholder="Banque Palatine" data-journal="bq" data-field="intitule" data-row="2" class="p-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 text-left text-sm">
+                <input type="number" placeholder="0.00" data-journal="bq" data-field="debit" data-row="2" class="p-2 border rounded-lg bg-gray-100 focus:ring-2 focus:ring-indigo-500 text-right text-sm" disabled="">
+                <input type="number" placeholder="0.00" data-journal="bq" data-field="credit" data-row="2" class="p-2 border rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 text-right text-sm">
               </div>
-              <div class="grid grid-cols-4 gap-2 pt-4 font-bold text-lg text-gray-800 border-t-2 border-slate-300 mt-4">
+              <div class="grid grid-cols-4 gap-2 pt-4 font-bold text-lg text-gray-800 border-t-2 border-slate-300 mt-4 min-w-[300px]">
                 <span class="col-span-2 text-right">TOTAL :</span>
                 <span id="bq-total-debit" class="text-right text-indigo-600">0,00 €</span>
                 <span id="bq-total-credit" class="text-right text-indigo-600">0,00 €</span>
@@ -456,26 +479,26 @@
     </div>
         <!-- MODULE 2: Trésorerie & Rapprochement Bancaire (Activité 1.6.1 & 1.6.2) -->
     <div id="module-trésorerie" class="module-content hidden">
-      <h2 class="text-3xl font-bold text-indigo-800 mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
-        <i data-lucide="align-center" class="w-7 h-7"></i> Processus 2 : Rapprochement Bancaire (RB)
+      <h2 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-6 md:mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
+        <i data-lucide="align-center" class="w-6 h-6"></i> Processus 2 : Rapprochement Bancaire (RB)
       </h2>
             <!-- Activité 1 6 1 - Règlement à crédit - Examen long -->
-      <section class="mb-12 p-8 bg-indigo-50 rounded-2xl shadow-xl border border-indigo-200">
-        <h3 class="text-2xl font-bold text-indigo-700 mb-6 border-b pb-2 flex items-center gap-3">
-          <i data-lucide="form-input" class="w-6 h-6"></i> A. Examen Corrigé : Règlement à Crédit et Logique RB
+      <section class="mb-12 p-4 md:p-8 bg-indigo-50 rounded-2xl shadow-xl border border-indigo-300">
+        <h3 class="text-xl md:text-2xl font-bold text-indigo-700 mb-6 border-b pb-2 flex items-center gap-3">
+          <i data-lucide="form-input" class="w-5 h-5"></i> A. Examen Corrigé : Règlement à Crédit et Logique RB
         </h3>
                 <!-- Contenu de Activité 1 6 1 -->
         <form id="examForm161" class="space-y-8">
-          <div class="question-card border-l-4 border-indigo-500 p-6 rounded-lg shadow-md bg-white">
+          <div class="question-card border-l-4 border-indigo-500 p-4 md:p-6 rounded-lg shadow-md bg-white">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Partie 1 : Concepts Fondamentaux (10 pts)</h4>
             <label for="q1_rb1" class="block text-base font-medium text-gray-700 mb-2">Question 1 : Expliquez pourquoi un **règlement à crédit** est la cause principale d'un écart au moment du **rapprochement bancaire**.</label>
             <textarea id="q1_rb1" name="q1_rb1" rows="6" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Développez votre réponse ici..."></textarea>
           </div>
-          <div class="question-card border-l-4 border-indigo-500 p-6 rounded-lg shadow-md bg-white">
+          <div class="question-card border-l-4 border-indigo-500 p-4 md:p-6 rounded-lg shadow-md bg-white">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Partie 2 : Application et Logique de Trésorerie (10 pts)</h4>
             <p class="mb-4 text-gray-600 text-sm">
-              <strong>Cas pratique :</strong> Le 31/10/N, l'entreprise ALPHA : Solde **512 Banque** (avant RB) : 
-              <span class="font-bold text-red-600">24 500,00 € (Créditeur)</span>. Solde **Relevé Bancaire** : 
+              <strong>Cas pratique :</strong> Le 31/10/N, l'entreprise ALPHA : Solde **512 Banque** (avant RB) :
+              <span class="font-bold text-red-600">24 500,00 € (Créditeur)</span>. Solde **Relevé Bancaire** :
               <span class="font-bold text-green-600">31 200,00 € (Débiteur)</span>.
             </p>
             <ul class="list-disc list-inside ml-4 text-gray-600 mb-4 text-sm">
@@ -484,16 +507,16 @@
               <li>**Agios** (frais bancaires) de 20,00 € enregistrés par la banque.</li>
               <li>**Chèque émis** pour un fournisseur de 800,00 € non présenté à l'encaissement.</li>
             </ul>
-            <label for="q2a_rb1" class="block text-base font-medium text-gray-700 mb-2">Question 2.a (5 pts) : Quel est le 
+            <label for="q2a_rb1" class="block text-base font-medium text-gray-700 mb-2">Question 2.a (5 pts) : Quel est le
               <strong>solde réel de trésorerie</strong> d'ALPHA au 31/10/N ?
             </label>
             <input type="number" id="q2a_rb1" name="q2a_rb1" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500 font-mono" placeholder="Saisissez le montant en euros (ex: 1234.56)">
-            <label for="q2b_rb1" class="block text-base font-medium text-gray-700 mt-4 mb-2">Question 2.b (5 pts) : Citez et qualifiez (Ajout ou Déduction) l'impact sur le solde du Relevé Bancaire des 
+            <label for="q2b_rb1" class="block text-base font-medium text-gray-700 mt-4 mb-2">Question 2.b (5 pts) : Citez et qualifiez (Ajout ou Déduction) l'impact sur le solde du Relevé Bancaire des
               <strong>deux écarts liés au règlement à crédit</strong>.
             </label>
             <textarea id="q2b_rb1" name="q2b_rb1" rows="4" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Exemple : Écart X : Ajout ; Écart Y : Déduction..."></textarea>
           </div>
-          <div class="question-card border-l-4 border-indigo-500 p-6 rounded-lg shadow-md bg-white">
+          <div class="question-card border-l-4 border-indigo-500 p-4 md:p-6 rounded-lg shadow-md bg-white">
             <h4 class="text-lg font-semibold text-gray-800 mb-4">Partie 3 : Analyse Critique (10 pts)</h4>
             <label for="q3_rb1" class="block text-base font-medium text-gray-700 mb-2">Question 3 : Expliquez en quoi la procédure de **rapprochement bancaire** est indissociable du **lettrage des comptes de tiers** (401/411), et comment l'intégration d'un PGI pourrait optimiser ces deux processus.</label>
             <textarea id="q3_rb1" name="q3_rb1" rows="6" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="Développez les liens logiques et les bénéfices du PGI..."></textarea>
@@ -501,64 +524,64 @@
           <button type="submit" id="submitButton161" class="w-full bg-indigo-600 text-white py-4 px-4 rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-offset-2 focus:ring-indigo-300 text-lg font-bold transition duration-150 shadow-lg">Soumettre l'Examen (40 points) pour Correction IA</button>
         </form>
                 <!-- Zone de Correction par l'IA -->
-        <div id="correctionSection161" class="mt-10 p-6 bg-gray-100 rounded-xl shadow-inner hidden border border-gray-300">
+        <div id="correctionSection161" class="mt-10 p-4 md:p-6 bg-gray-100 rounded-xl shadow-inner hidden border border-gray-300">
           <h4 class="text-2xl font-bold text-indigo-700 mb-4 border-b pb-2">Résultats et Correction Détaillée</h4>
           <div id="correctionOutput161" class="text-gray-800 space-y-4"></div>
         </div>
       </section>
             <!-- Activité 1 6 2 - Examen Doctoral RB -->
-      <section class="p-8 bg-green-50 rounded-2xl shadow-xl border border-green-200">
-        <h3 class="text-2xl font-bold text-green-700 mb-6 border-b pb-2 flex items-center gap-3">
-          <i data-lucide="brain-circuit" class="w-6 h-6"></i> B. Examen Doctoral : Fondements du Rapprochement Bancaire (QCM &amp; Analyse)
+      <section class="p-4 md:p-8 bg-green-50 rounded-2xl shadow-xl border border-green-300">
+        <h3 class="text-xl md:text-2xl font-bold text-green-700 mb-6 border-b pb-2 flex items-center gap-3">
+          <i data-lucide="brain-circuit" class="w-5 h-5"></i> B. Examen Doctoral : Fondements du Rapprochement Bancaire (QCM &amp; Analyse)
         </h3>
                 <!-- Contenu de Activité 1 6 2 -->
         <form id="examForm162" onsubmit="submitRB2Exam(event)"><!-- Question 1: Théorie du RB (QCM) -->
-          <div class="question-card border-l-4 border-green-500 bg-white p-6 rounded-xl shadow-lg mb-6">
-            <p class="text-xl font-semibold text-gray-800 mb-4">Question 1 (Théorie - QCM)</p>
+          <div class="question-card border-l-4 border-green-500 bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <p class="text-lg md:text-xl font-semibold text-gray-800 mb-4">Question 1 (Théorie - QCM)</p>
             <p class="text-gray-700 mb-4">Selon la Partie Double, si l'entreprise enregistre une **opération au Débit** de son compte $512$ (Banque), cette même opération sera enregistrée comment dans les livres de la Banque (le Relevé) ?</p>
             <div class="space-y-3">
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q1_rb2" value="a" class="mr-2 text-green-600 focus:ring-green-500">a) Au Débit, car c'est un flux entrant pour les deux entités.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q1_rb2" value="b" class="mr-2 text-green-600 focus:ring-green-500">b) Au Crédit, car la Banque considère l'argent comme une **dette** envers l'entreprise.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q1_rb2" value="c" class="mr-2 text-green-600 focus:ring-green-500">c) Au Débit également, mais en changeant le signe.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q1_rb2" value="d" class="mr-2 text-green-600 focus:ring-green-500">d) Au Crédit, car c'est un produit pour la Banque.
               </label>
             </div>
           </div>
                     <!-- Question 2: Nature des écarts (QCM) -->
-          <div class="question-card border-l-4 border-green-500 bg-white p-6 rounded-xl shadow-lg mb-6">
-            <p class="text-xl font-semibold text-gray-800 mb-4">Question 2 (Écarts - QCM)</p>
+          <div class="question-card border-l-4 border-green-500 bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <p class="text-lg md:text-xl font-semibold text-gray-800 mb-4">Question 2 (Écarts - QCM)</p>
             <p class="text-gray-700 mb-4">Un **Agio bancaire** (frais) constaté sur le Relevé Bancaire mais non encore enregistré par l'entreprise est un écart de quelle nature, et quelle est sa correction comptable ?</p>
             <div class="space-y-3">
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q2_rb2" value="a" class="mr-2 text-green-600 focus:ring-green-500">a) Un écart temporaire, corrigé par un Débit du compte 512.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q2_rb2" value="b" class="mr-2 text-green-600 focus:ring-green-500">b) Un écart temporaire, car la banque va l'annuler le mois prochain.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q2_rb2" value="c" class="mr-2 text-green-600 focus:ring-green-500">c) Un écart **permanent** (omission), corrigé par un **Crédit du compte 512** et un Débit du compte 627.
               </label>
-              <label class="block">
+              <label class="block cursor-pointer p-2 rounded-lg hover:bg-green-50 transition-colors">
                 <input type="radio" name="q2_rb2" value="d" class="mr-2 text-green-600 focus:ring-green-500">d) Un écart permanent, corrigé par un Débit du compte 512 et un Crédit du compte 764.
               </label>
             </div>
           </div>
                     <!-- Question 3: Justification Conceptuelle (Réponse IA) -->
-          <div class="border-l-4 border-green-500 bg-white p-6 rounded-xl shadow-lg mb-6">
-            <p class="text-xl font-semibold text-gray-800 mb-4">Question 3 (Régularisation - IA)</p>
+          <div class="border-l-4 border-green-500 bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <p class="text-lg md:text-xl font-semibold text-gray-800 mb-4">Question 3 (Régularisation - IA)</p>
             <p class="text-gray-700 mb-4">Justifiez en termes comptables la raison pour laquelle les **Chèques Émis Non Présentés (CENP)** sont ajoutés au Solde du Relevé Bancaire dans le Tableau de Rapprochement.</p>
             <textarea name="q3_rb2" rows="4" placeholder="Votre réponse détaillée..." class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"></textarea>
           </div>
                     <!-- Question 4: Analyse de Scénario (Réponse IA) -->
-          <div class="border-l-4 border-green-500 bg-white p-6 rounded-xl shadow-lg mb-6">
-            <p class="text-xl font-semibold text-gray-800 mb-4">Question 4 (Analyse de Scénario - IA)</p>
+          <div class="border-l-4 border-green-500 bg-white p-4 md:p-6 rounded-xl shadow-lg mb-6">
+            <p class="text-lg md:text-xl font-semibold text-gray-800 mb-4">Question 4 (Analyse de Scénario - IA)</p>
             <p class="text-gray-700 mb-4">Le service comptable a commis une **erreur de saisie** en enregistrant un virement client de $1200\text{€}$ au lieu du montant réel de $2100\text{€}$ dans le compte $512$ (Encaissement). Expliquez la nature et le montant de l'écart final généré par cette erreur.</p>
             <textarea name="q4_rb2" rows="4" placeholder="Votre réponse détaillée..." class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500"></textarea>
           </div>
@@ -574,13 +597,13 @@
     </div>
         <!-- MODULE 3: Cycle Comptable & Tiers (Activité Illustration & 1.6.3) -->
     <div id="module-illustration" class="module-content hidden">
-      <h2 class="text-3xl font-bold text-indigo-800 mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
-        <i data-lucide="trello" class="w-7 h-7"></i> Processus 7 : Logique de la Partie Double &amp; Comptes de Tiers
+      <h2 class="text-2xl md:text-3xl font-bold text-indigo-800 mb-6 md:mb-8 border-b-2 border-indigo-300 pb-3 flex items-center gap-2">
+        <i data-lucide="trello" class="w-6 h-6"></i> Processus 7 : Logique de la Partie Double &amp; Comptes de Tiers
       </h2>
             <!-- Activité 1 6 3 - Analyse Synthétique des Comptes de Tiers -->
-      <section class="mb-12 p-8 bg-yellow-50 rounded-2xl shadow-xl border border-yellow-200">
-        <h3 class="text-2xl font-bold text-yellow-700 mb-6 border-b pb-2 flex items-center gap-3">
-          <i data-lucide="pie-chart" class="w-6 h-6"></i> A. Analyse Synthétique des Comptes de Tiers (401/411) &amp; Simulation
+      <section class="mb-12 p-4 md:p-8 bg-yellow-50 rounded-2xl shadow-xl border border-yellow-300">
+        <h3 class="text-xl md:text-2xl font-bold text-yellow-700 mb-6 border-b pb-2 flex items-center gap-3">
+          <i data-lucide="pie-chart" class="w-5 h-5"></i> A. Analyse Synthétique des Comptes de Tiers (401/411) &amp; Simulation
         </h3>
                 <!-- Contenu de Activité 1 6 3 -->
         <div class="space-y-8">
@@ -589,13 +612,13 @@
               <p class="font-bold text-red-700 text-xl mb-1 flex items-center gap-2">
                 <i data-lucide="minus-circle" class="w-5 h-5"></i> 401 Fournisseur
               </p>
-              <p class="text-gray-700 text-sm">Nature : 
+              <p class="text-gray-700 text-sm">Nature :
                 <span class="font-bold text-red-700">Passif (Dette)</span>.
               </p>
-              <p class="text-gray-700 text-sm">Augmente au : 
+              <p class="text-gray-700 text-sm">Augmente au :
                 <span class="font-bold">Crédit</span> (Réception facture).
               </p>
-              <p class="text-gray-700 text-sm">Diminue au : 
+              <p class="text-gray-700 text-sm">Diminue au :
                 <span class="font-bold">Débit</span> (Paiement).
               </p>
             </div>
@@ -603,13 +626,13 @@
               <p class="font-bold text-green-700 text-xl mb-1 flex items-center gap-2">
                 <i data-lucide="plus-circle" class="w-5 h-5"></i> 411 Client
               </p>
-              <p class="text-gray-700 text-sm">Nature : 
+              <p class="text-gray-700 text-sm">Nature :
                 <span class="font-bold text-green-700">Actif (Créance)</span>.
               </p>
-              <p class="text-gray-700 text-sm">Augmente au : 
+              <p class="text-gray-700 text-sm">Augmente au :
                 <span class="font-bold">Débit</span> (Émission facture).
               </p>
-              <p class="text-gray-700 text-sm">Diminue au : 
+              <p class="text-gray-700 text-sm">Diminue au :
                 <span class="font-bold">Crédit</span> (Paiement reçu).
               </p>
             </div>
@@ -617,15 +640,15 @@
               <p class="font-bold text-blue-700 text-xl mb-1 flex items-center gap-2">
                 <i data-lucide="bank" class="w-5 h-5"></i> 512 Banque
               </p>
-              <p class="text-gray-700 text-sm">Nature : 
+              <p class="text-gray-700 text-sm">Nature :
                 <span class="font-bold text-blue-700">Actif (Disponible)</span>.
               </p>
               <p class="text-gray-700 text-sm">Flux Client : **Débit** le 512.</p>
               <p class="text-gray-700 text-sm">Flux Fournisseur : **Crédit** le 512.</p>
             </div>
           </div>
-          <div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200">
-            <h4 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Simulation du Solde Tiers (Compte 411)</h4>
+          <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg border border-slate-200">
+            <h4 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Simulation du Solde Tiers (Compte 411)</h4>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
               <div>
                 <label for="initialBalance" class="block text-sm font-medium text-gray-700">Solde Initial (Créance au Débit 411)</label>
@@ -644,7 +667,7 @@
               <i data-lucide="bar-chart-3" class="w-5 h-5 inline-block mr-2"></i> Calculer le Solde Final (411)
             </button>
             <div id="result-tiers" class="mt-6 p-4 border-2 border-yellow-300 rounded-xl text-center bg-gray-50 shadow-inner">
-              <p class="text-lg font-semibold text-gray-800">Solde Final : 
+              <p class="text-lg font-semibold text-gray-800">Solde Final :
                 <span id="balanceValue" class="text-3xl text-yellow-700 font-extrabold">5500.00 €</span>
               </p>
               <p class="text-base text-gray-600" id="status-tiers">Statut : Créance en cours (Débiteur)</p>
@@ -653,28 +676,28 @@
         </div>
       </section>
             <!-- Illustration - Enregistrement et suivi des opérations comptables relatives aux clients -->
-      <section class="p-8 bg-slate-800 rounded-2xl shadow-xl">
-        <h3 class="text-2xl font-bold text-slate-300 mb-6 border-b-2 border-slate-600 pb-2 flex items-center gap-3">
-          <i data-lucide="trending-up" class="w-6 h-6"></i> B. Cycle d'une Opération Commerciale (Illustrations)
+      <section class="p-4 md:p-8 bg-slate-900 rounded-2xl shadow-xl">
+        <h3 class="text-xl md:text-2xl font-bold text-slate-300 mb-6 border-b-2 border-slate-700 pb-2 flex items-center gap-3">
+          <i data-lucide="trending-up" class="w-5 h-5"></i> B. Cycle d'une Opération Commerciale (Illustrations)
         </h3>
                 <!-- Barre d'onglets pour la navigation (Illustration) - Style raffiné -->
-        <div class="mb-8 flex justify-center space-x-2 flex-wrap bg-slate-700 p-3 rounded-xl shadow-inner">
+        <div class="mb-8 flex flex-wrap justify-center gap-2 bg-slate-800 p-3 rounded-xl shadow-inner">
           <button class="tab-button-ill active flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-blue-600 text-white hover:bg-blue-700" data-tab-ill="vente-ill" onclick="showIllustrationTab('vente-ill')">
-            <i data-lucide="shopping-cart"></i> Facture de Vente
+            <i data-lucide="shopping-cart" class="w-4 h-4"></i> Facture de Vente
           </button>
-          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-600 text-slate-300 hover:bg-slate-500" data-tab-ill="achat-ill" onclick="showIllustrationTab('achat-ill')">
-            <i data-lucide="package"></i> Facture d'Achat
+          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-700 text-slate-300 hover:bg-slate-500" data-tab-ill="achat-ill" onclick="showIllustrationTab('achat-ill')">
+            <i data-lucide="package" class="w-4 h-4"></i> Facture d'Achat
           </button>
-          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-600 text-slate-300 hover:bg-slate-500" data-tab-ill="reglement-ill" onclick="showIllustrationTab('reglement-ill')">
-            <i data-lucide="banknote"></i> Règlement Client
+          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-700 text-slate-300 hover:bg-slate-500" data-tab-ill="reglement-ill" onclick="showIllustrationTab('reglement-ill')">
+            <i data-lucide="banknote" class="w-4 h-4"></i> Règlement Client
           </button>
-          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-600 text-slate-300 hover:bg-slate-500" data-tab-ill="journaux-ill" onclick="showIllustrationTab('journaux-ill')">
-            <i data-lucide="book-open"></i> Journal &amp; Grand-Livre
+          <button class="tab-button-ill flex items-center gap-2 px-4 py-2 font-semibold rounded-lg transition-colors bg-slate-700 text-slate-300 hover:bg-slate-500" data-tab-ill="journaux-ill" onclick="showIllustrationTab('journaux-ill')">
+            <i data-lucide="book-open" class="w-4 h-4"></i> Journal &amp; Grand-Livre
           </button>
         </div>
                 <!-- Contenu des onglets d'illustration -->
         <div id="illustration-content"><!-- ONGLET 1: FACTURE DE VENTE -->
-          <div id="vente-ill" class="tab-content-ill grid md:grid-cols-2 gap-8 bg-slate-900 p-6 rounded-xl shadow-2xl">
+          <div id="vente-ill" class="tab-content-ill grid md:grid-cols-2 gap-8 bg-slate-800 p-6 rounded-xl shadow-2xl">
             <div class="p-4 rounded-lg bg-gray-100 text-gray-800 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-blue-700">Le Document Source : Facture de Vente</h4>
               <div class="document-view text-sm">
@@ -690,20 +713,22 @@
                 <p class="mb-2 text-xs">
                   <strong>Date:</strong> 10/10/2025
                 </p>
-                <table class="w-full text-left">
-                  <thead>
-                    <tr>
-                      <th class="py-1">Description</th>
-                      <th class="py-1 text-right">Total HT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="border-b border-gray-300">
-                      <td class="py-1">Huile de massage "Sérénité"</td>
-                      <td class="py-1 text-right">500,00 €</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="w-full text-left">
+                    <thead>
+                      <tr>
+                        <th class="py-1">Description</th>
+                        <th class="py-1 text-right">Total HT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b border-gray-300">
+                        <td class="py-1">Huile de massage "Sérénité"</td>
+                        <td class="py-1 text-right">500,00 €</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 <div class="mt-4 text-right">
                   <p>
                     <strong>Total HT :</strong> 500,00 €
@@ -720,40 +745,42 @@
             <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-green-400">La Traduction Comptable : Journal des Ventes</h4>
               <p class="mb-4 text-sm text-slate-300">Constatation de la créance (**411** D) et du produit (**701** C).</p>
-              <table class="journal-table bg-white text-gray-800 text-sm">
-                <thead>
-                  <tr>
-                    <th>N° Compte</th>
-                    <th>Libellé</th>
-                    <th class="text-right">Débit</th>
-                    <th class="text-right">Crédit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>411BIOHAR</td>
-                    <td>Client BIO HARMONY</td>
-                    <td class="text-right font-semibold">600,00</td>
-                    <td class="text-right"></td>
-                  </tr>
-                  <tr>
-                    <td>701201</td>
-                    <td>Ventes de PF</td>
-                    <td class="text-right"></td>
-                    <td class="text-right font-semibold">500,00</td>
-                  </tr>
-                  <tr>
-                    <td>44571</td>
-                    <td>TVA collectée</td>
-                    <td class="text-right"></td>
-                    <td class="text-right font-semibold">100,00</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="journal-table bg-white text-gray-800 text-sm">
+                  <thead>
+                    <tr>
+                      <th>N° Compte</th>
+                      <th>Libellé</th>
+                      <th class="text-right">Débit</th>
+                      <th class="text-right">Crédit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>411BIOHAR</td>
+                      <td>Client BIO HARMONY</td>
+                      <td class="text-right font-semibold">600,00</td>
+                      <td class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td>701201</td>
+                      <td>Ventes de PF</td>
+                      <td class="text-right"></td>
+                      <td class="text-right font-semibold">500,00</td>
+                    </tr>
+                    <tr>
+                      <td>44571</td>
+                      <td>TVA collectée</td>
+                      <td class="text-right"></td>
+                      <td class="text-right font-semibold">100,00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
                     <!-- ONGLET 2: FACTURE D'ACHAT -->
-          <div id="achat-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-900 p-6 rounded-xl shadow-2xl">
+          <div id="achat-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-800 p-6 rounded-xl shadow-2xl">
             <div class="p-4 rounded-lg bg-gray-100 text-gray-800 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-blue-700">Le Document Source : Facture d'Achat</h4>
               <div class="document-view text-sm">
@@ -769,20 +796,22 @@
                 <p class="mb-2 text-xs">
                   <strong>Date:</strong> 05/10/2025
                 </p>
-                <table class="w-full text-left">
-                  <thead>
-                    <tr>
-                      <th class="py-1">Description</th>
-                      <th class="py-1 text-right">Total HT</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr class="border-b border-gray-300">
-                      <td class="py-1">Flacons en verre</td>
-                      <td class="py-1 text-right">200,00 €</td>
-                    </tr>
-                  </tbody>
-                </table>
+                <div class="table-responsive">
+                  <table class="w-full text-left">
+                    <thead>
+                      <tr>
+                        <th class="py-1">Description</th>
+                        <th class="py-1 text-right">Total HT</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b border-gray-300">
+                        <td class="py-1">Flacons en verre</td>
+                        <td class="py-1 text-right">200,00 €</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
                 <div class="mt-4 text-right">
                   <p>
                     <strong>Total HT :</strong> 200,00 €
@@ -799,166 +828,176 @@
             <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-green-400">La Traduction Comptable : Journal des Achats</h4>
               <p class="mb-4 text-sm text-slate-300">Constatation de la charge (**602** D) et de la dette (**401** C).</p>
-              <table class="journal-table bg-white text-gray-800 text-sm">
-                <thead>
-                  <tr>
-                    <th>N° Compte</th>
-                    <th>Libellé</th>
-                    <th class="text-right">Débit</th>
-                    <th class="text-right">Crédit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>602610</td>
-                    <td>Achat de flacons</td>
-                    <td class="text-right font-semibold">200,00</td>
-                    <td class="text-right"></td>
-                  </tr>
-                  <tr>
-                    <td>44566</td>
-                    <td>TVA déductible</td>
-                    <td class="text-right font-semibold">40,00</td>
-                    <td class="text-right"></td>
-                  </tr>
-                  <tr>
-                    <td>401CODPA</td>
-                    <td>Fournisseur CODPACK</td>
-                    <td class="text-right"></td>
-                    <td class="text-right font-semibold">240,00</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="journal-table bg-white text-gray-800 text-sm">
+                  <thead>
+                    <tr>
+                      <th>N° Compte</th>
+                      <th>Libellé</th>
+                      <th class="text-right">Débit</th>
+                      <th class="text-right">Crédit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>602610</td>
+                      <td>Achat de flacons</td>
+                      <td class="text-right font-semibold">200,00</td>
+                      <td class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td>44566</td>
+                      <td>TVA déductible</td>
+                      <td class="text-right font-semibold">40,00</td>
+                      <td class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td>401CODPA</td>
+                      <td>Fournisseur CODPACK</td>
+                      <td class="text-right"></td>
+                      <td class="text-right font-semibold">240,00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
                     <!-- ONGLET 3: RÈGLEMENT CLIENT -->
-          <div id="reglement-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-900 p-6 rounded-xl shadow-2xl">
+          <div id="reglement-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-800 p-6 rounded-xl shadow-2xl">
             <div class="p-4 rounded-lg bg-gray-100 text-gray-800 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-blue-700">Le Document Source : Relevé Bancaire</h4>
               <div class="document-view text-sm">
                 <h3>Relevé de compte - Banque Palatine</h3>
-                <table class="w-full text-left mt-4">
+                <div class="table-responsive">
+                  <table class="w-full text-left mt-4">
+                    <thead>
+                      <tr>
+                        <th class="py-1">Date</th>
+                        <th class="py-1">Opération</th>
+                        <th class="py-1 text-right">Crédit (Banque)</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b border-gray-300">
+                        <td class="py-1">08/11/2025</td>
+                        <td class="py-1">Virement reçu de BIO HARMONY</td>
+                        <td class="py-1 text-right font-bold text-green-600">600,00 €</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
+              <h4 class="text-xl font-semibold mb-4 text-center text-green-400">La Traduction Comptable : Journal de Banque</h4>
+              <p class="mb-4 text-sm text-slate-300">Augmentation de la trésorerie (**512** D) et extinction de la créance (**411** C).</p>
+              <div class="table-responsive">
+                <table class="journal-table bg-white text-gray-800 text-sm">
                   <thead>
                     <tr>
-                      <th class="py-1">Date</th>
-                      <th class="py-1">Opération</th>
-                      <th class="py-1 text-right">Crédit (Banque)</th>
+                      <th>N° Compte</th>
+                      <th>Libellé</th>
+                      <th class="text-right">Débit</th>
+                      <th class="text-right">Crédit</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr class="border-b border-gray-300">
-                      <td class="py-1">08/11/2025</td>
-                      <td class="py-1">Virement reçu de BIO HARMONY</td>
-                      <td class="py-1 text-right font-bold text-green-600">600,00 €</td>
+                    <tr>
+                      <td>5121</td>
+                      <td>Banque Palatine</td>
+                      <td class="text-right font-semibold">600,00</td>
+                      <td class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td>411BIOHAR</td>
+                      <td>Client BIO HARMONY</td>
+                      <td class="text-right"></td>
+                      <td class="text-right font-semibold">600,00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+                    <!-- ONGLET 4: JOURNAUX & GRAND-LIVRE -->
+          <div id="journaux-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-800 p-6 rounded-xl shadow-2xl">
+            <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
+              <h4 class="text-xl font-semibold mb-4 text-center text-blue-400">L'Outil : Le Journal Comptable (Chronologique)</h4>
+              <div class="table-responsive">
+                <table class="journal-table bg-white text-gray-800 text-sm">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>N° Cpt</th>
+                      <th>Libellé</th>
+                      <th class="text-right">Débit</th>
+                      <th class="text-right">Crédit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>10/10</td>
+                      <td>411BIOHAR</td>
+                      <td>Facture V2025-001</td>
+                      <td class="text-right">600,00</td>
+                      <td class="text-right"></td>
+                    </tr>
+                    <tr>
+                      <td>10/10</td>
+                      <td>701201</td>
+                      <td>Ventes de PF</td>
+                      <td class="text-right"></td>
+                      <td class="text-right">500,00</td>
+                    </tr>
+                    <tr>
+                      <td>10/10</td>
+                      <td>44571</td>
+                      <td>TVA collectée</td>
+                      <td class="text-right"></td>
+                      <td class="text-right">100,00</td>
+                    </tr>
+                    <tr class="bg-gray-200">
+                      <td colspan="5" class="text-center font-semibold">... autres écritures ...</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
             <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
-              <h4 class="text-xl font-semibold mb-4 text-center text-green-400">La Traduction Comptable : Journal de Banque</h4>
-              <p class="mb-4 text-sm text-slate-300">Augmentation de la trésorerie (**512** D) et extinction de la créance (**411** C).</p>
-              <table class="journal-table bg-white text-gray-800 text-sm">
-                <thead>
-                  <tr>
-                    <th>N° Compte</th>
-                    <th>Libellé</th>
-                    <th class="text-right">Débit</th>
-                    <th class="text-right">Crédit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>5121</td>
-                    <td>Banque Palatine</td>
-                    <td class="text-right font-semibold">600,00</td>
-                    <td class="text-right"></td>
-                  </tr>
-                  <tr>
-                    <td>411BIOHAR</td>
-                    <td>Client BIO HARMONY</td>
-                    <td class="text-right"></td>
-                    <td class="text-right font-semibold">600,00</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-                    <!-- ONGLET 4: JOURNAUX & GRAND-LIVRE -->
-          <div id="journaux-ill" class="tab-content-ill hidden grid md:grid-cols-2 gap-8 bg-slate-900 p-6 rounded-xl shadow-2xl">
-            <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
-              <h4 class="text-xl font-semibold mb-4 text-center text-blue-400">L'Outil : Le Journal Comptable (Chronologique)</h4>
-              <table class="journal-table bg-white text-gray-800 text-sm">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>N° Cpt</th>
-                    <th>Libellé</th>
-                    <th class="text-right">Débit</th>
-                    <th class="text-right">Crédit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>10/10</td>
-                    <td>411BIOHAR</td>
-                    <td>Facture V2025-001</td>
-                    <td class="text-right">600,00</td>
-                    <td class="text-right"></td>
-                  </tr>
-                  <tr>
-                    <td>10/10</td>
-                    <td>701201</td>
-                    <td>Ventes de PF</td>
-                    <td class="text-right"></td>
-                    <td class="text-right">500,00</td>
-                  </tr>
-                  <tr>
-                    <td>10/10</td>
-                    <td>44571</td>
-                    <td>TVA collectée</td>
-                    <td class="text-right"></td>
-                    <td class="text-right">100,00</td>
-                  </tr>
-                  <tr class="bg-gray-200">
-                    <td colspan="5" class="text-center font-semibold">... autres écritures ...</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="p-4 rounded-lg bg-slate-700 text-slate-50 shadow-inner">
               <h4 class="text-xl font-semibold mb-4 text-center text-green-400">L'Outil : Le Grand-Livre (Par Compte)</h4>
               <h5 class="text-white font-semibold text-base text-center mb-2">Grand-Livre du compte 411BIOHAR</h5>
-              <table class="journal-table bg-white text-gray-800 text-sm">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Journal</th>
-                    <th>Libellé</th>
-                    <th class="text-right">Débit</th>
-                    <th class="text-right">Crédit</th>
-                    <th class="text-right">Solde</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>10/10</td>
-                    <td>VE</td>
-                    <td>Facture V2025-001</td>
-                    <td class="text-right">600,00</td>
-                    <td class="text-right"></td>
-                    <td class="text-right font-bold text-green-600">600,00 (D)</td>
-                  </tr>
-                  <tr>
-                    <td>08/11</td>
-                    <td>BQ</td>
-                    <td>Règlement V2025-001</td>
-                    <td class="text-right"></td>
-                    <td class="text-right">600,00</td>
-                    <td class="text-right font-bold text-gray-600">0,00</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive">
+                <table class="journal-table bg-white text-gray-800 text-sm">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Journal</th>
+                      <th>Libellé</th>
+                      <th class="text-right">Débit</th>
+                      <th class="text-right">Crédit</th>
+                      <th class="text-right">Solde</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>10/10</td>
+                      <td>VE</td>
+                      <td>Facture V2025-001</td>
+                      <td class="text-right">600,00</td>
+                      <td class="text-right"></td>
+                      <td class="text-right font-bold text-green-600">600,00 (D)</td>
+                    </tr>
+                    <tr>
+                      <td>08/11</td>
+                      <td>BQ</td>
+                      <td>Règlement V2025-001</td>
+                      <td class="text-right"></td>
+                      <td class="text-right">600,00</td>
+                      <td class="text-right font-bold text-gray-600">0,00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
               <p class="mt-4 text-sm text-slate-300">Le Solde final nul confirme le **lettrage** et l'extinction de la créance.</p>
             </div>
           </div>
@@ -968,12 +1007,15 @@
   </main>
 </div>
 <script>// --- VARIABLES GLOBALES ET SETUP ---
-    const API_KEY = "AIzaSyDl2pWxJULR0_rjw9X9WLNy49CBZifodo4"; // Clé centralisée
-    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}`;
+    // Clé API laissée vide par défaut pour la sécurité. L'utilisateur doit la renseigner lui-même.
+    const API_KEY = "AIzaSyDl2pWxJULr0_rjw9X9WLNy49CBZifodo4";
+    // L'URL de l'API est construite si la clé est présente, sinon on assume qu'elle sera fournie par l'environnement
+    const API_URL = API_KEY ? `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${API_KEY}` : '';
     const MAX_RETRIES = 5;
     const INITIAL_DELAY = 1000; // 1 second
     const loadingOverlay = document.getElementById('loading-overlay');
     const loadingMessage = document.getElementById('loading-message');
+
     document.addEventListener('DOMContentLoaded', () => {
         lucide.createIcons();
         // Attacher les listeners d'input aux champs numériques pour les totaux IM/BQ
@@ -987,6 +1029,7 @@
                 }
             });
         });
+
         // Calcul des totaux initiaux
         ['im', 'bq'].forEach(id => calculateTotals(id));
         document.getElementById('submit-btn-tva').addEventListener('click', checkTVAAnswers);
@@ -1005,6 +1048,7 @@
             showIllustrationTab(initialIllTab.getAttribute('data-tab-ill'));
         }
     });
+
     // --- UTILS COMMUNES ---
     function showLoading(show, message = "Analyse en cours...") {
         loadingMessage.textContent = message;
@@ -1016,8 +1060,12 @@
             loadingOverlay.classList.add('opacity-0', 'pointer-events-none');
         }
     }
+
     // Fonction de backoff exponentiel pour la robustesse de l'API
     async function fetchWithRetry(payload, maxRetries = MAX_RETRIES) {
+        if (!API_URL) {
+            throw new Error("Clé API Google AI Studio manquante. Veuillez la renseigner dans le script.");
+        }
         for (let i = 0; i < maxRetries; i++) {
             try {
                 const response = await fetch(API_URL, {
@@ -1043,6 +1091,7 @@
             }
         }
     }
+
     // Simple Markdown parser (nécessaire pour Activité 1.6.1)
     const marked = (function() {
         function parse(markdown) {
@@ -1061,10 +1110,10 @@
                 let listItems = p.split('@@LISTITEM@@').filter(item => item.trim() !== '');
                 if (listItems.length > 1) {
                     // C'est une liste
-                    return '<ul>' + listItems.map(item => `<li>${item.replace(/@@LINEBREAK@@/g, '<br>')}</li>`).join('') + '</ul>';
+                    return '<ul class="list-disc list-inside ml-4">' + listItems.map(item => `<li>${item.replace(/@@LINEBREAK@@/g, '<br>')}</li>`).join('') + '</ul>';
                 } else if (p.trim()) {
                     // C'est un paragraphe
-                    return `<p>${p.replace(/@@LINEBREAK@@/g, '<br>')}</p>`;
+                    return `<p class="mb-4">${p.replace(/@@LINEBREAK@@/g, '<br>')}</p>`;
                 }
                 return '';
             }).join('');
@@ -1074,20 +1123,22 @@
         }
         return { parse };
     })();
+
     // --- LOGIQUE DE NAVIGATION ---
     function showModule(moduleId) {
         document.querySelectorAll('.module-content').forEach(el => el.classList.add('hidden'));
         document.getElementById(moduleId).classList.remove('hidden');
         document.querySelectorAll('.tab-button').forEach(btn => {
-            btn.classList.remove('active', 'bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-200', 'border-indigo-700');
-            btn.classList.add('text-slate-700', 'hover:bg-white', 'hover:shadow-md');
+            btn.classList.remove('active', 'bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-300', 'border-indigo-700');
+            btn.classList.add('text-slate-800', 'bg-slate-300', 'hover:bg-white', 'hover:shadow-xl');
             if (btn.getAttribute('data-module') === moduleId) {
-                btn.classList.add('active', 'bg-indigo-600', 'text-white', 'shadow-lg', 'shadow-indigo-200', 'border-indigo-700');
-                btn.classList.remove('text-slate-700', 'hover:bg-white', 'hover:shadow-md');
+                btn.classList.add('active', 'bg-indigo-600', 'text-white', 'shadow-xl', 'shadow-indigo-300', 'border-indigo-700');
+                btn.classList.remove('text-slate-800', 'bg-slate-300', 'hover:bg-white', 'hover:shadow-xl');
             }
         });
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
     function showIllustrationTab(tabId) {
         document.querySelectorAll('.tab-content-ill').forEach(content => {
             content.classList.add('hidden');
@@ -1095,34 +1146,46 @@
         document.getElementById(tabId).classList.remove('hidden');
         document.querySelectorAll('.tab-button-ill').forEach(tab => {
             tab.classList.remove('active', 'bg-blue-600', 'text-white', 'hover:bg-blue-700');
-            tab.classList.add('bg-slate-600', 'text-slate-300', 'hover:bg-slate-500');
+            tab.classList.add('bg-slate-700', 'text-slate-300', 'hover:bg-slate-500');
             if (tab.getAttribute('data-tab-ill') === tabId) {
                 tab.classList.add('active', 'bg-blue-600', 'text-white', 'hover:bg-blue-700');
-                tab.classList.remove('bg-slate-600', 'text-slate-300', 'hover:bg-slate-500');
+                tab.classList.remove('bg-slate-700', 'text-slate-300', 'hover:bg-slate-500');
             }
         });
     }
+
     // --- LOGIQUE TVA (Activité 1,4) ---
     async function checkTVAAnswers() {
         showLoading(true, "Correction de votre examen TVA en cours...");
         const resultsDiv = document.getElementById('results-tva');
         resultsDiv.innerHTML = '';
+
         const userAnswers = {
             q1: document.getElementById('q1_tva').value, q2: document.getElementById('q2_tva').value,
             q3: document.getElementById('q3_tva').value, q4: document.getElementById('q4_tva').value,
             q5: document.getElementById('q5_tva').value, q6: document.getElementById('q6_tva').value,
             q7: document.getElementById('q7_tva').value,
         };
+
         const questions = {
             q1: document.querySelector('label[for="q1_tva"]').innerText, q2: document.querySelector('label[for="q2_tva"]').innerText,
             q3: document.querySelector('label[for="q3_tva"]').innerText, q4: document.querySelector('label[for="q4_tva"]').innerText,
             q5: document.querySelector('label[for="q5_tva"]').innerText, q6: document.querySelector('label[for="q6_tva"]').innerText,
             q7: document.querySelector('label[for="q7_tva"]').innerText,
         };
+
         const caseStudyText = document.getElementById('case-study-tva').innerText;
+
         const systemPrompt = `Tu es un correcteur expert pour l'examen du BTS Comptabilité-Gestion en France. Ton rôle est d'évaluer les réponses d'un étudiant à une étude de cas sur la TVA. Sois précis, rigoureux et pédagogue. Base-toi **UNIQUEMENT** sur le contexte de l'étude de cas fourni. Pour chaque question, tu dois fournir : 1. Une 'evaluation' (chaîne de caractères) : Une analyse détaillée et bienveillante. 2. Une 'reponse_correcte' (chaîne de caractères) : La réponse idéale. Pour les écritures comptables, utilise le format tableau Markdown. 3. Une 'note' (nombre) : Attribue une note (Q1: /3, Q2: /2, Q3: /3, Q4: /2, Q5: /3, Q6: /4, Q7: /3). Fournis un 'feedback_general' et une 'note_globale' sur 20. Structure ta réponse finale **UNIQUEMENT** en JSON valide.`;
+
         const userQuery = `### CONTEXTE DE L'ÉTUDE DE CAS ### ${caseStudyText} ### QUESTIONS ET RÉPONSES DE L'ÉTUDIANT ### Question 1: ${questions.q1} Réponse de l'étudiant 1: ${userAnswers.q1} Question 2: ${questions.q2} Réponse de l'étudiant 2: ${userAnswers.q2} Question 3: ${questions.q3} Réponse de l'étudiant 3: ${userAnswers.q3} Question 4: ${questions.q4} Réponse de l'étudiant 4: ${userAnswers.q4} Question 5: ${questions.q5} Réponse de l'étudiant 5: ${userAnswers.q5} Question 6: ${questions.q6} Réponse de l'étudiant 6: ${userAnswers.q6} Question 7: ${questions.q7} Réponse de l'étudiant 7: ${userAnswers.q7}`;
-        const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json" } };
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { responseMimeType: "application/json" }
+        };
+
         try {
             const response = await fetchWithRetry(payload);
             const result = await response.json();
@@ -1133,8 +1196,9 @@
             resultsDiv.innerHTML = `<div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md" role="alert"><p class="font-bold">Erreur Correction TVA</p><p>Impossible d'obtenir la correction. Erreur: ${error.message}</p></div>`;
         } finally { showLoading(false); }
     }
+
     function displayTvaResults(data, resultsDiv) {
-        let resultsHTML = `<div class="bg-white p-6 rounded-lg shadow-md border border-slate-200"><h4 class="text-2xl font-bold text-slate-800 mb-4">Résultats de votre évaluation</h4><div class="flex items-center justify-between p-4 bg-sky-100 rounded-lg mb-6 shadow-sm"><p class="text-lg font-semibold text-sky-800">Note Globale :</p><p class="text-4xl font-extrabold text-sky-600">${data.note_globale} / 20</p></div><div class="bg-slate-50 p-4 rounded-lg border border-slate-200"><h4 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="message-square-text" class="w-5 h-5"></i> Feedback Général :</h4><p class="text-slate-600 mt-2">${data.feedback_general}</p></div></div><h4 class="text-xl font-bold text-slate-800 mt-8 mb-4 border-b pb-2">Correction détaillée :</h4><div class="space-y-6">`;
+        let resultsHTML = `<div class="bg-white p-6 rounded-lg shadow-xl border border-slate-200"><h4 class="text-2xl font-bold text-slate-800 mb-4">Résultats de votre évaluation</h4><div class="flex items-center justify-between p-4 bg-sky-100 rounded-lg mb-6 shadow-md"><p class="text-lg font-semibold text-sky-800">Note Globale :</p><p class="text-4xl font-extrabold text-sky-600">${data.note_globale} / 20</p></div><div class="bg-slate-50 p-4 rounded-lg border border-slate-200"><h4 class="font-bold text-slate-700 flex items-center gap-2"><i data-lucide="message-square-text" class="w-5 h-5"></i> Feedback Général :</h4><p class="text-slate-600 mt-2">${data.feedback_general}</p></div></div><h4 class="text-xl font-bold text-slate-800 mt-8 mb-4 border-b pb-2">Correction détaillée :</h4><div class="space-y-6">`;
         const barème = [3, 2, 3, 2, 3, 4, 3];
         data.evaluations.forEach((item, index) => {
             resultsHTML += `<div class="bg-white p-6 rounded-xl shadow-lg border border-slate-200"><div class="flex justify-between items-start mb-4"><h5 class="text-lg font-semibold text-slate-700">Question ${item.question}</h5><span class="px-3 py-1 text-base font-bold rounded-full ${item.note >= barème[index] / 2 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">${item.note} / ${barème[index]}</span></div><div class="space-y-4"><div><h6 class="font-bold text-sky-600 flex items-center gap-1"><i data-lucide="book-open-check" class="w-4 h-4"></i> Évaluation de votre réponse :</h6><p class="text-slate-600 mt-1">${item.evaluation.replace(/\n/g, '<br>')}</p></div><div><h6 class="font-bold text-green-600 flex items-center gap-1"><i data-lucide="check-square" class="w-4 h-4"></i> Réponse correcte attendue :</h6><div class="prose prose-sm max-w-none mt-1 text-slate-600">${formatMarkdownTable(item.reponse_correcte)}</div></div></div></div>`;
@@ -1143,42 +1207,51 @@
         resultsDiv.innerHTML = resultsHTML;
         lucide.createIcons(); // Re-initialiser les icônes après mise à jour du DOM
     }
+
     function formatMarkdownTable(text) {
         const lines = text.split('\n');
         let html = '';
         let inTable = false;
         for (let line of lines) {
             if (line.includes('|')) {
-                if (!inTable) { html += '<table class="journal-table text-sm">'; inTable = true; }
+                if (!inTable) { html += '<div class="table-responsive"><table class="journal-table text-sm">'; inTable = true; }
                 const parts = line.split('|').filter(p => p.trim() !== '');
-                if(line.includes('---')){ html += '<thead><tr>' + parts.map(p => `<th class="bg-indigo-100">${p.trim().replace(/---/g, '')}</th>`).join('') + '</tr></thead><tbody>'; }
+                if(line.includes('---')){ html += '<thead><tr>' + parts.map(p => `<th class="bg-indigo-600 text-white">${p.trim().replace(/---/g, '')}</th>`).join('') + '</tr></thead><tbody>'; }
                 else if (html.includes('<thead>')){ html += '<tr>' + parts.map(p => `<td>${p.trim()}</td>`).join('') + '</tr>'; }
             } else {
-                if (inTable) { html += '</tbody></table>'; inTable = false; }
+                if (inTable) { html += '</tbody></table></div>'; inTable = false; }
                 if (line.trim()) { html += `<p>${line.replace(/\\n/g, '<br>')}</p>`; }
             }
         }
-        if (inTable) { html += '</tbody></table>'; }
+        if (inTable) { html += '</tbody></table></div>'; }
         return html.replace(/\|/g, '');
     }
+
     // --- LOGIQUE IMMO (Activité 1,5) ---
     function formatCurrency(amount) {
         return parseFloat(amount).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
     }
+
     function calculateTotals(journalId) {
         const rows = document.querySelectorAll(`#journal-${journalId}-input .journal-row`);
         let totalDebit = 0;
         let totalCredit = 0;
+
         rows.forEach(row => {
             const debitInput = row.querySelector(`[data-journal="${journalId}"][data-field="debit"]`);
             const creditInput = row.querySelector(`[data-journal="${journalId}"][data-field="credit"]`);
+
+            // Utiliser parseFloat pour gérer les valeurs de manière sécurisée
             totalDebit += parseFloat(debitInput ? debitInput.value.replace(',', '.') || 0 : 0);
             totalCredit += parseFloat(creditInput ? creditInput.value.replace(',', '.') || 0 : 0);
         });
+
         document.getElementById(`${journalId}-total-debit`).textContent = formatCurrency(totalDebit);
         document.getElementById(`${journalId}-total-credit`).textContent = formatCurrency(totalCredit);
+
         return { totalDebit, totalCredit };
     }
+
     function collectJournalEntries(journalId) {
         const rows = document.querySelectorAll(`#journal-${journalId}-input .journal-row`);
         const entries = [];
@@ -1187,67 +1260,139 @@
             const intitule = row.querySelector(`[data-journal="${journalId}"][data-field="intitule"]`).value.trim();
             const debit = parseFloat(row.querySelector(`[data-journal="${journalId}"][data-field="debit"]`).value.replace(',', '.') || 0);
             const credit = parseFloat(row.querySelector(`[data-journal="${journalId}"][data-field="credit"]`).value.replace(',', '.') || 0);
+
             if (compte && (debit !== 0 || credit !== 0)) { entries.push({ compte, intitule, debit: debit, credit: credit }); }
         });
         return entries;
     }
+
     async function validateImmoEntries() {
         showLoading(true, "Vérification des écritures d'immobilisation...");
         const userEntriesIM = collectJournalEntries('im');
         const userEntriesBQ = collectJournalEntries('bq');
         const resultsDiv = document.getElementById('results-immo');
         const verifyButton = document.getElementById('verify-button-immo');
+
         verifyButton.disabled = true;
         resultsDiv.classList.add('hidden');
+
         const journalIMTotal = calculateTotals('im');
         const journalBQTotal = calculateTotals('bq');
+
         if (userEntriesIM.length === 0 || userEntriesBQ.length === 0) {
-            displayImmoError("Veuillez remplir au moins une ligne par journal (IM et BQ) avant de vérifier.", verifyButton); return;
+            displayImmoError("Veuillez remplir au moins une ligne par journal (IM et BQ) avant de vérifier.", verifyButton);
+            return;
         }
+
         if (Math.abs(journalIMTotal.totalDebit - journalIMTotal.totalCredit) > 0.01 || Math.abs(journalBQTotal.totalDebit - journalBQTotal.totalCredit) > 0.01) {
-            displayImmoError("Attention : Vos journaux ne sont pas équilibrés (Débit ≠ Crédit). L'écriture en partie double est obligatoire.", verifyButton); return;
+            displayImmoError("Attention : Vos journaux ne sont pas équilibrés (Débit ≠ Crédit). L'écriture en partie double est obligatoire.", verifyButton);
+            return;
         }
+
         const contextPrompt = `Contexte du cas ROSALCHIMIE: Coût Acquisition Capitalisé HT (215): 75750.00 EUR. Charges Immédiates HT (618): 500.00 EUR. TVA Déductible Immo (44562, 20%): 15150.00 EUR. Dette Fournisseur TTC (404): 91400.00 EUR. Objectif: Vérifier la valorisation et l'imputation de l'acquisition (Journal IM) et du paiement (Journal BQ). Entrées Utilisateur: Journal IM: ${JSON.stringify(userEntriesIM)} Journal BQ: ${JSON.stringify(userEntriesBQ)}`;
+
         const systemPrompt = `Tu es un expert comptable en France. Évalue les écritures comptables pour l'acquisition et le paiement de l'immobilisation en te basant sur le contexte. La réponse doit être **UNIQUEMENT** un objet JSON valide pour la correction automatique.`;
-        const payload = { contents: [{ parts: [{ text: contextPrompt }] }], systemInstruction: { parts: [{ text: systemPrompt }] }, generationConfig: { responseMimeType: "application/json", responseSchema: { type: "object", properties: { "validation_globale": { "type": "string" }, "feedback_pedagogique": { "type": "string" }, "journal_im": { type: "object", properties: { "statut": { "type": "string" }, "erreurs_details": { "type": "string" }, "ecritures_correctes": { type: "array" } } }, "journal_bq": { type: "object", properties: { "statut": { "type": "string" }, "erreurs_details": { "type": "string" }, "ecritures_correctes": { type: "array" } } } } } } };
+
+        const payload = {
+            contents: [{ parts: [{ text: contextPrompt }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "object",
+                    properties: {
+                        "validation_globale": { "type": "string" },
+                        "feedback_pedagogique": { "type": "string" },
+                        "journal_im": {
+                            type: "object",
+                            properties: {
+                                "statut": { "type": "string" },
+                                "erreurs_details": { "type": "string" },
+                                "ecritures_correctes": { type: "array" }
+                            }
+                        },
+                        "journal_bq": {
+                            type: "object",
+                            properties: {
+                                "statut": { "type": "string" },
+                                "erreurs_details": { "type": "string" },
+                                "ecritures_correctes": { type: "array" }
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
         try {
             const response = await fetchWithRetry(payload);
             const result = await response.json();
             const jsonText = result.candidates[0].content.parts[0].text;
             const parsedJson = JSON.parse(jsonText);
             displayImmoResults(parsedJson, userEntriesIM, userEntriesBQ, resultsDiv);
+
         } catch (error) {
             displayImmoError(`Erreur de communication avec le serveur. ${error.message}`, verifyButton);
-        } finally { showLoading(false); verifyButton.disabled = false; }
+        } finally {
+            showLoading(false);
+            verifyButton.disabled = false;
+        }
     }
+
     function displayImmoResults(data, userEntriesIM, userEntriesBQ, resultsDiv) {
         resultsDiv.classList.remove('hidden');
         resultsDiv.classList.remove('bg-green-50', 'border-green-300', 'bg-red-50', 'border-red-300');
         const isSuccess = data.validation_globale === 'Succès';
         resultsDiv.classList.add(isSuccess ? 'bg-green-100 border-green-500' : 'bg-red-100 border-red-500');
+
         let htmlContent = `<div id="ai-feedback" class="space-y-4"><p class="text-xl font-bold ${isSuccess ? 'text-green-900' : 'text-red-900'} flex items-center gap-2"><i data-lucide="${isSuccess ? 'check-circle' : 'x-circle'}" class="h-6 w-6"></i> ${data.validation_globale.toUpperCase()}!</p><p class="text-gray-800">${data.feedback_pedagogique}</p>`;
         htmlContent += renderJournalResult('im', data.journal_im, userEntriesIM);
         htmlContent += renderJournalResult('bq', data.journal_bq, userEntriesBQ);
         htmlContent += '</div>';
+
         resultsDiv.innerHTML = `<h4 class="text-2xl font-bold ${isSuccess ? 'text-green-700' : 'text-red-700'} mb-4 border-b pb-2">Feedback de la Correction</h4>` + htmlContent;
+
         lucide.createIcons(); // Re-render icons if needed
     }
+
     function renderJournalResult(journalId, result, userEntries) {
         const statusColor = result.statut.includes('Correct') ? 'text-green-700' : 'text-red-700';
         const journalTitle = journalId === 'im' ? "Journal IM (Acquisition)" : "Journal BQ (Règlement)";
-        let html = `<div class="border p-4 rounded-xl space-y-3 ${result.statut.includes('Correct') ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'} shadow-md"><h5 class="font-bold text-lg ${statusColor} flex items-center gap-2"><i data-lucide="${result.statut.includes('Correct') ? 'check' : 'alert-triangle'}" class="w-5 h-5"></i> ${journalTitle} : Statut ${result.statut.toUpperCase()}</h5><div class="mt-2"><p class="font-semibold text-gray-700">Votre saisie :</p>${userEntries.map(e => formatEntry(e)).join('')}</div>`;
+
+        let html = `<div class="border p-4 rounded-xl space-y-3 ${result.statut.includes('Correct') ? 'border-green-400 bg-green-50' : 'border-red-400 bg-red-50'} shadow-md">
+            <h5 class="font-bold text-lg ${statusColor} flex items-center gap-2"><i data-lucide="${result.statut.includes('Correct') ? 'check' : 'alert-triangle'}" class="w-5 h-5"></i> ${journalTitle} : Statut ${result.statut.toUpperCase()}</h5>
+            
+            <div class="mt-2 text-sm">
+                <p class="font-semibold text-gray-700">Votre saisie (Compte | Libellé | Débit | Crédit) :</p>
+                ${userEntries.map(e => formatEntry(e)).join('')}
+            </div>`;
+
         if (!result.statut.includes('Correct')) {
-            html += `<div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 text-sm text-yellow-800 mt-4"><p class="font-bold">Analyse des erreurs :</p><p>${result.erreurs_details}</p></div><p class="font-semibold text-gray-700 mt-4">Écriture(s) Correcte(s) Attendue(s) :</p><div class="space-y-1">${result.ecritures_correctes.map(e => formatEntry(e, true)).join('')}</div>`;
+            html += `<div class="bg-yellow-100 border-l-4 border-yellow-500 p-3 text-sm text-yellow-800 mt-4">
+                <p class="font-bold">Analyse des erreurs :</p>
+                <p>${result.erreurs_details}</p>
+            </div>
+            <p class="font-semibold text-gray-700 mt-4 text-sm">Écriture(s) Correcte(s) Attendue(s) :</p>
+            <div class="space-y-1 text-sm">${result.ecritures_correctes.map(e => formatEntry(e, true)).join('')}</div>`;
         }
-        html += '</div>'; return html;
+        html += '</div>';
+        return html;
     }
+
     function formatEntry(entry, isCorrect = false) {
         const debit = formatCurrency(entry.debit);
         const credit = formatCurrency(entry.credit);
         const colorClass = isCorrect ? 'text-green-800' : 'text-red-600';
         const bgClass = isCorrect ? 'bg-green-50' : 'bg-red-50';
-        return `<div class="grid grid-cols-4 gap-2 py-1 text-sm ${bgClass} rounded-md px-2"><span class="font-mono ${isCorrect ? 'text-green-700 font-semibold' : 'text-red-700'}">${entry.compte}</span><span class="${isCorrect ? 'text-green-900' : 'text-red-900'}">${entry.intitule}</span><span class="text-right ${colorClass}">${debit === '0,00 €' ? '-' : debit}</span><span class="text-right ${colorClass}">${credit === '0,00 €' ? '-' : credit}</span></div>`;
+
+        return `<div class="grid grid-cols-4 gap-2 py-1 text-xs sm:text-sm ${bgClass} rounded-md px-2">
+            <span class="font-mono ${isCorrect ? 'text-green-700 font-semibold' : 'text-red-700'}">${entry.compte}</span>
+            <span class="${isCorrect ? 'text-green-900' : 'text-red-900'}">${entry.intitule}</span>
+            <span class="text-right font-mono ${colorClass}">${debit === '0,00 €' ? '-' : debit}</span>
+            <span class="text-right font-mono ${colorClass}">${credit === '0,00 €' ? '-' : credit}</span>
+        </div>`;
     }
+
     function displayImmoError(message, button) {
         const resultsDiv = document.getElementById('results-immo');
         resultsDiv.classList.remove('hidden');
@@ -1258,85 +1403,129 @@
         showLoading(false);
         lucide.createIcons();
     }
+
     // --- LOGIQUE RB 1 (Activité 1 6 1) ---
     async function submitRB1Exam(e) {
         e.preventDefault();
         showLoading(true, "Analyse approfondie de l'examen de Rapprochement Bancaire...");
+
         const submitButton = document.getElementById('submitButton161');
         const correctionSection = document.getElementById('correctionSection161');
         const correctionOutput = document.getElementById('correctionOutput161');
+
         const q1 = document.getElementById('q1_rb1').value.trim();
         const q2a = document.getElementById('q2a_rb1').value.trim();
         const q2b = document.getElementById('q2b_rb1').value.trim();
         const q3 = document.getElementById('q3_rb1').value.trim();
+
         if (!q1 || !q2a || !q2b || !q3) {
             // Utilisation d'un message box personnalisé au lieu d'alert()
             correctionOutput.innerHTML = `<div class="p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 rounded-md" role="alert"><p class="font-bold">Attention</p><p>Veuillez répondre à toutes les questions avant de soumettre l'examen pour correction.</p></div>`;
             correctionSection.classList.remove('hidden');
-            showLoading(false); return;
+            showLoading(false);
+            return;
         }
+
         correctionSection.classList.remove('hidden');
         correctionOutput.innerHTML = '<p class="text-center py-8 text-indigo-500 flex items-center justify-center gap-2 font-semibold"><div class="spinner w-6 h-6 mr-2"></div> Préparation de la correction experte...</p>';
         submitButton.disabled = true;
-        const soldeReel = 31200.00 - 5000.00 - 800.00; // Calcul correct pour l'IA
+
+        // Le solde réel se calcule en partant du solde bancaire (Débiteur)
+        // Solde Banque (31200 D) + CNR (5000 C) - CENP (800 D) = 31200 + 5000 - 800 = 35400
+        const soldeReel = 31200.00 + 5000.00 - 800.00;
+
         const systemPrompt = `Vous êtes Études, un tuteur adaptatif de niveau doctoral, spécialisé en comptabilité et gestion. Votre rôle est de corriger l'examen d'un étudiant de BTS Comptabilité-Gestion sur le sujet critique du Rapprochement Bancaire, en insistant sur l'impact du Règlement à Crédit. Fournissez une correction détaillée, extrêmement structurée, et pédagogique, en Markdown rigoureux, en citant le Plan Comptable Général (PCG) et les concepts de trésorerie/droits constatés. Le Solde Réel de Trésorerie correct est ${soldeReel.toFixed(2)}€. Le score total doit être affiché au début de la correction. Le résultat final doit mentionner une micro-tâche de suivi.`;
+
         const userQuery = `Voici les données du cas pratique (pour référence de calcul): {solde_512_comptable: -24500.00, solde_releve_bancaire: 31200.00, ecarts: [{ type: "Chèque Client (Crédit/Attente)", montant: 5000.00 }, { type: "Prélèvement Fournisseur (Débit/Omission)", montant: 2500.00 }, { type: "Agios (Débit/Omission)", montant: 20.00 }, { type: "Chèque Émis Fournisseur (Débit/Attente)", montant: 800.00 }]}. --- RÉPONSES DE L'ÉTUDIANT --- **Question 1 (Synthèse - 10 pts) :** ${q1} **Question 2.a (Calcul - 5 pts) :** ${q2a} **Question 2.b (Écarts - 5 pts) :** ${q2b} **Question 3 (Analyse Critique - 10 pts) :** ${q3}`;
-        const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
         try {
             const response = await fetchWithRetry(payload);
             const result = await response.json();
             const correctionText = result.candidates[0].content.parts[0].text;
             correctionOutput.innerHTML = `<div class="p-6 bg-white border border-indigo-200 rounded-lg shadow-md">${marked.parse(correctionText)}</div>`;
+
         } catch (error) {
             correctionOutput.innerHTML = `<p class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-md">Erreur critique de l'IA : Impossible de générer la correction. ${error.message}</p>`;
-        } finally { showLoading(false); submitButton.disabled = false; }
+        } finally {
+            showLoading(false);
+            submitButton.disabled = false;
+        }
     }
+
     // --- LOGIQUE RB 2 (Activité 1 6 2) ---
     async function submitRB2Exam(event) {
         event.preventDefault();
         showLoading(true, "Évaluation de vos connaissances fondamentales en RB...");
+
         const form = event.target;
         const q3Answer = form.elements['q3_rb2'].value.trim();
         const q4Answer = form.elements['q4_rb2'].value.trim();
         const resultsSection = document.getElementById('results-rb2');
+
         resultsSection.innerHTML = `<h4 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-2 border-green-500">Résultats de la Correction</h4>`;
         resultsSection.classList.remove('hidden');
+
         let totalScore = 0;
         const maxScore = 4;
+
         const qcmResults = {
             'q1_rb2': { answer: form.elements['q1_rb2'].value, score: checkQCM('q1_rb2', form.elements['q1_rb2'].value), correct: 'b' },
             'q2_rb2': { answer: form.elements['q2_rb2'].value, score: checkQCM('q2_rb2', form.elements['q2_rb2'].value), correct: 'c' }
         };
+
         totalScore += qcmResults.q1_rb2.score;
         totalScore += qcmResults.q2_rb2.score;
+
         resultsSection.innerHTML += `<div class="mb-6 p-4 bg-gray-100 rounded-lg shadow-inner border border-gray-300"><h5 class="text-xl font-bold mb-3 text-green-700">Correction Questions QCM (Score: ${qcmResults.q1_rb2.score + qcmResults.q2_rb2.score}/2)</h5><p class="mb-2 text-gray-700 font-medium">Q1 (Dualité) : ${qcmResults.q1_rb2.score ? '<span class="text-green-600 font-bold">Correct.</span>' : '<span class="text-red-600 font-bold">Incorrect.</span>'} Réponse attendue: <span class="font-bold">b) Au Crédit</span>.</p><p class="text-gray-700 font-medium">Q2 (Agio Bancaire) : ${qcmResults.q2_rb2.score ? '<span class="text-green-600 font-bold">Correct.</span>' : '<span class="text-red-600 font-bold">Incorrect.</span>'} Réponse attendue: <span class="font-bold">c) Écart permanent, Crédit 512 / Débit 627</span>.</p></div><h5 class="text-xl font-bold mb-4 text-green-700">Correction Questions à Développement (Score Max: 2)</h5>`;
+
         try {
             const feedbackQ3 = await getAIFeedback('q3_rb2', q3Answer);
             const scoreQ3Match = feedbackQ3.match(/Score:\s*(-?\d+(\.\d+)?)/);
             const scoreQ3 = scoreQ3Match ? parseFloat(scoreQ3Match[0].split(':')[1].trim()) : 0;
             totalScore += scoreQ3;
-            resultsSection.innerHTML += `<div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow"><p class="font-bold text-lg mb-2 text-gray-800">Question 3 - Justification CENP (Score: ${scoreQ3}/1)</p><p class="italic text-gray-700">"${q3Answer}"</p><div class="mt-3 p-3 bg-white border border-yellow-200 rounded-md"><p class="font-semibold text-yellow-800">Évaluation Détaillée de l'IA :</p><p class="text-gray-700 whitespace-pre-wrap">${feedbackQ3}</p></div></div>`;
+
+            resultsSection.innerHTML += `<div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow"><p class="font-bold text-lg mb-2 text-gray-800">Question 3 - Justification CENP (Score: ${scoreQ3}/1)</p><p class="italic text-gray-700 text-sm">"${q3Answer}"</p><div class="mt-3 p-3 bg-white border border-yellow-200 rounded-md"><p class="font-semibold text-yellow-800">Évaluation Détaillée de l'IA :</p><p class="text-gray-700 whitespace-pre-wrap">${feedbackQ3.replace(/Evaluation:\s*/, '')}</p></div></div>`;
+
             const feedbackQ4 = await getAIFeedback('q4_rb2', q4Answer);
             const scoreQ4Match = feedbackQ4.match(/Score:\s*(-?\d+(\.\d+)?)/);
             const scoreQ4 = scoreQ4Match ? parseFloat(scoreQ4Match[0].split(':')[1].trim()) : 0;
             totalScore += scoreQ4;
-            resultsSection.innerHTML += `<div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow"><p class="font-bold text-lg mb-2 text-gray-800">Question 4 - Analyse de Scénario (Score: ${scoreQ4}/1)</p><p class="italic text-gray-700">"${q4Answer}"</p><div class="mt-3 p-3 bg-white border border-yellow-200 rounded-md"><p class="font-semibold text-yellow-800">Évaluation Détaillée de l'IA :</p><p class="text-gray-700 whitespace-pre-wrap">${feedbackQ4}</p></div></div>`;
+
+            resultsSection.innerHTML += `<div class="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded-lg shadow"><p class="font-bold text-lg mb-2 text-gray-800">Question 4 - Analyse de Scénario (Score: ${scoreQ4}/1)</p><p class="italic text-gray-700 text-sm">"${q4Answer}"</p><div class="mt-3 p-3 bg-white border border-yellow-200 rounded-md"><p class="font-semibold text-yellow-800">Évaluation Détaillée de l'IA :</p><p class="text-gray-700 whitespace-pre-wrap">${feedbackQ4.replace(/Evaluation:\s*/, '')}</p></div></div>`;
+
             const percentage = ((totalScore / maxScore) * 100).toFixed(1);
-            let message = ""; let color = "red-600";
+            let message = "";
+            let color = "red-600";
             if (percentage >= 85) { message = "Félicitations Doctorales! Maîtrise Exceptionnelle (Alpha-Level)"; color = "green-600"; }
             else if (percentage >= 60) { message = "Maîtrise Satisfaisante (Beta-Level). Concepts fondamentaux bien acquis."; color = "orange-500"; }
             else { message = "Des lacunes subsistent. Revoir les fondements de la dualité et des CENP."; color = "red-600"; }
-            resultsSection.innerHTML += `<div class="mt-8 p-6 text-center rounded-xl bg-gray-50 border-2 border-gray-300 shadow-md"><h5 class="text-2xl font-extrabold text-gray-800">Note Finale (Sur 4 points) : <span class="text-${color}">${totalScore.toFixed(1)} / 4.0</span></h5><p class="text-xl font-medium mt-2 text-gray-700">Taux de Maîtrise : <span class="text-${color}">${percentage}%</span></p><p class="mt-4 text-lg font-semibold text-${color}">${message}</p></div>`;
+
+            resultsSection.innerHTML += `<div class="mt-8 p-6 text-center rounded-xl bg-gray-50 border-2 border-gray-300 shadow-md">
+                <h5 class="text-2xl font-extrabold text-gray-800">Note Finale (Sur 4 points) : <span class="text-${color}">${totalScore.toFixed(1)} / 4.0</span></h5>
+                <p class="text-xl font-medium mt-2 text-gray-700">Taux de Maîtrise : <span class="text-${color}">${percentage}%</span></p>
+                <p class="mt-4 text-lg font-semibold text-${color}">${message}</p>
+            </div>`;
+
         } catch (error) {
             resultsSection.innerHTML += `<div class="p-4 mt-4 bg-red-100 text-red-700 border border-red-400 rounded-md">Erreur Critique: ${error.message} (Vérifiez la clé API et l'accès réseau.)</div>`;
-        } finally { showLoading(false); }
+        } finally {
+            showLoading(false);
+        }
     }
+
     function checkQCM(questionNumber, userAnswer) {
         const correctAnswers = { 'q1_rb2': 'b', 'q2_rb2': 'c' };
         return userAnswer === correctAnswers[questionNumber] ? 1 : 0;
     }
+
     async function getAIFeedback(questionNumber, userAnswer) {
         let userQuery, systemPrompt;
+
         if (questionNumber === 'q3_rb2') {
             userQuery = `Évaluez la réponse de l'étudiant : "${userAnswer}". Contexte: Expliquer la raison comptable (Partie Double) pour laquelle un Chèque Émis Non Présenté (CENP) est ajouté au solde du Relevé Bancaire (où il est créditeur) dans le Tableau de Rapprochement. Le CENP est crédité au compte 512 de l'entreprise.`;
             systemPrompt = "Act as a world-class doctoral accounting professor and French language expert. Evaluate the student's explanation based on the duality of the bank account (Actif vs. Passif) and the timing of a check recorded in the company's books (Crédit du 512) but not the bank's (Pas encore Débité le relevé). Provide a maximum 3-sentence, rigorous, and detailed evaluation in French. Assign a score: 1 point if the explanation is flawless, 0.5 if it grasps the duality or the timing but not both correctly, and 0 if incorrect or missing critical concepts. Format: 'Evaluation: [texte]. Score: [X]'.";
@@ -1344,21 +1533,32 @@
             userQuery = `Évaluez la réponse de l'étudiant : "${userAnswer}". Contexte: L'entreprise a saisi un virement client de 1200€ au lieu de 2100€ (Encaissement, Débit 512). La banque a saisi 2100€. Expliquez l'écart (montant/nature) et sa gestion dans le RB. L'écart correct est un manque de 900€ au Débit du compte 512.`;
             systemPrompt = "Act as a world-class doctoral accounting professor and French language expert. Evaluate the student's analysis of the scenario. The answer must identify the exact amount of the error (900€) and explain that the error is on the company's book (the internal 512 account is under-stated by 900€) and requires a corrective entry (Débit 512 / Crédit 411). Provide a maximum 3-sentence, rigorous, and detailed evaluation in French. Assign a score: 1 point if the amount and the accounting correction mechanism are both correct, 0.5 if only the amount is correct, and 0 if incorrect or missing critical concepts. Format: 'Evaluation: [texte]. Score: [X]'.";
         }
-        const payload = { contents: [{ parts: [{ text: userQuery }] }], systemInstruction: { parts: [{ text: systemPrompt }] } };
+
+        const payload = {
+            contents: [{ parts: [{ text: userQuery }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
         const response = await fetchWithRetry(payload);
+        // La réponse textuelle contient le format 'Evaluation: [texte]. Score: [X]'.
         return response.text();
     }
+
     // --- LOGIQUE TIERS (Activité 1 6 3) ---
     function calculateTierBalance() {
         const initial = parseFloat(document.getElementById('initialBalance').value) || 0;
         const invoice = parseFloat(document.getElementById('newInvoice').value) || 0;
         const payment = parseFloat(document.getElementById('paymentReceived').value) || 0;
         const finalBalance = initial + invoice - payment;
+
         const balanceElement = document.getElementById('balanceValue');
         const statusElement = document.getElementById('status-tiers');
+
         balanceElement.textContent = finalBalance.toFixed(2) + ' €';
+
         // Retirer toutes les classes de couleur
         balanceElement.classList.remove('text-red-600', 'text-gray-600', 'text-green-600', 'text-yellow-700');
+
         if (finalBalance > 0) {
             balanceElement.classList.add('text-green-600');
             statusElement.textContent = `Statut : Créance en cours (Débiteur). Montant restant dû.`;
